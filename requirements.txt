@@ -1,0 +1,6 @@
+# Python packages needed by Recruitment Tracker (Phase 1: no database yet)
+Django>=5.2,<6.0
+
+# --- Later, when SQL Server is connected (NOT needed now) ---
+# mssql-django
+# pyodbc

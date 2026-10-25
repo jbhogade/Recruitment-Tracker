@@ -1,0 +1,30 @@
+<!-- ------------- Start Code for Left navigation menu ----------------- -->
+<!-- HOW TO ADD A PAGE: when a page is confirmed, replace its "is-planned" <span> line below
+     with a link line copied from the Dashboard item (change the url name and the text).
+     NOTE: never write template tags inside HTML comments - Django still runs them. -->
+<aside class="sidebar" aria-label="Main navigation">
+  <div class="brand">
+    <span class="brand__mark" aria-hidden="true">RT</span>
+    <div class="brand__text">
+      <strong>Recruitment Tracker</strong>
+      <span>HR Team</span>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a class="nav__item {% if active_nav == 'dashboard' %}is-active{% endif %}"
+       href="{% url 'tracker:dashboard' %}"{% if active_nav == 'dashboard' %} aria-current="page"{% endif %}>
+      Dashboard
+    </a>
+
+    <!-- Planned pages: built one by one, linked here after confirmation -->
+    <span class="nav__item is-planned" aria-disabled="true">Candidates <small>Planned</small></span>
+    <span class="nav__item is-planned" aria-disabled="true">Interviews <small>Planned</small></span>
+    <span class="nav__item is-planned" aria-disabled="true">Departments <small>Planned</small></span>
+    <span class="nav__item is-planned" aria-disabled="true">Reports <small>Planned</small></span>
+    <span class="nav__item is-planned" aria-disabled="true">Settings <small>Planned</small></span>
+  </nav>
+
+  <p class="sidebar__note">Demo data only. No database connected yet.</p>
+</aside>
+<!-- ------------- End of the code ------------------------------ -->

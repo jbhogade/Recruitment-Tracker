@@ -1,0 +1,122 @@
+/* ==========================================================================
+   File : static/css/themes.css
+   What : Colour themes. Every colour used by the portal comes from the
+          variables below, so a theme = one block of variables.
+   Add a theme : copy any [data-theme="..."] block, change the name and the
+          colours, then add the same name in tracker/context_processors.py.
+   ========================================================================== */
+
+/*-------------- Start Code for Variables shared by all themes -----------------*/
+:root {
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  color-scheme: dark;
+}
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Theme 1 : Dark (default, ink + teal) -----------------*/
+:root,
+[data-theme="dark"] {
+  --bg:        #101318;   /* page background            */
+  --sidebar:   #0c0f13;   /* left menu background       */
+  --panel:     #171b22;   /* cards / panels             */
+  --panel-2:   #1e242d;   /* hover rows, inner areas    */
+  --line:      #2a313c;   /* borders and dividers       */
+  --text:      #e7eaef;   /* main text                  */
+  --text-dim:  #97a1b0;   /* secondary text             */
+  --accent:    #4cc9b0;   /* highlight colour           */
+  --accent-ink:#06201b;   /* text drawn on the accent   */
+  --s-pending:  #e3b341;  /* status colours             */
+  --s-hold:     #b79cf2;
+  --s-selected: #5ba8ff;
+  --s-joined:   #4fd18b;
+  --s-rejected: #f07878;
+  color-scheme: dark;
+}
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Theme 2 : Grey (charcoal + amber) -----------------*/
+[data-theme="grey"] {
+  --bg:        #25272b;
+  --sidebar:   #1e2023;
+  --panel:     #2e3137;
+  --panel-2:   #373b42;
+  --line:      #454a52;
+  --text:      #ecedef;
+  --text-dim:  #a6abb3;
+  --accent:    #e6a95a;
+  --accent-ink:#2a1a04;
+  --s-pending:  #e8c25c;
+  --s-hold:     #bfa6f0;
+  --s-selected: #6fb0f2;
+  --s-joined:   #5fd596;
+  --s-rejected: #f08585;
+  color-scheme: dark;
+}
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Theme 3 : Lite (light mode, indigo) -----------------*/
+[data-theme="lite"] {
+  --bg:        #f2f4f8;
+  --sidebar:   #ffffff;
+  --panel:     #ffffff;
+  --panel-2:   #eef1f6;
+  --line:      #dde2ea;
+  --text:      #1b2230;
+  --text-dim:  #5b6678;
+  --accent:    #3d5bd9;
+  --accent-ink:#ffffff;
+  --s-pending:  #a8680a;
+  --s-hold:     #6f4fc7;
+  --s-selected: #1f62d6;
+  --s-joined:   #167a46;
+  --s-rejected: #c23a3a;
+  color-scheme: light;
+}
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Theme 4 : Blue (deep navy + sky) -----------------*/
+[data-theme="blue"] {
+  --bg:        #0b2037;
+  --sidebar:   #081a2d;
+  --panel:     #11304f;
+  --panel-2:   #173b60;
+  --line:      #24496f;
+  --text:      #e8f0f9;
+  --text-dim:  #9db4cc;
+  --accent:    #5db4ff;
+  --accent-ink:#04203a;
+  --s-pending:  #f0c561;
+  --s-hold:     #c2aaf5;
+  --s-selected: #7cc0ff;
+  --s-joined:   #5fdba0;
+  --s-rejected: #f58a8a;
+  color-scheme: dark;
+}
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Theme 5 : Emerald (deep green + mint) -----------------*/
+[data-theme="emerald"] {
+  --bg:        #0d1f1a;
+  --sidebar:   #0a1814;
+  --panel:     #14291f;
+  --panel-2:   #1b3529;
+  --line:      #28473a;
+  --text:      #e6f2ec;
+  --text-dim:  #94b2a4;
+  --accent:    #5fd6a0;
+  --accent-ink:#05231a;
+  --s-pending:  #e8c35e;
+  --s-hold:     #bba7f0;
+  --s-selected: #6fb7f5;
+  --s-joined:   #6fe0a8;
+  --s-rejected: #f28787;
+  color-scheme: dark;
+}
+/*-------------- End of the code ------------------------------*/

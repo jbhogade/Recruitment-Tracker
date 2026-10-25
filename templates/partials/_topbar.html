@@ -1,0 +1,17 @@
+<!-- ------------- Start Code for Top bar (page title, date, theme switcher) ----------------- -->
+<header class="topbar">
+  <div>
+    <h1 class="topbar__title">{{ page_title }}</h1>
+    {% if today_label %}<p class="topbar__date">{{ today_label }}</p>{% endif %}
+  </div>
+
+  <!-- Theme switcher: one round button per theme (list comes from tracker/context_processors.py) -->
+  <div class="themes" role="group" aria-label="Choose colour theme">
+    {% for t in THEMES %}
+      <button type="button" class="themes__btn" data-theme-choice="{{ t.key }}"
+              style="--swatch: {{ t.swatch }}" title="{{ t.label }} theme"
+              aria-label="{{ t.label }} theme" aria-pressed="false"></button>
+    {% endfor %}
+  </div>
+</header>
+<!-- ------------- End of the code ------------------------------ -->

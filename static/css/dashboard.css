@@ -1,0 +1,99 @@
+/* ==========================================================================
+   File : static/css/dashboard.css
+   What : Styles used ONLY by the Dashboard page
+          (pipeline, key numbers, upcoming list, charts).
+   ========================================================================== */
+
+/*-------------- Start Code for Hiring pipeline (hero block) -----------------*/
+.pipeline {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 26px 22px;
+}
+.pipeline__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 18px; }
+.pipeline__head h2 { font-size: 20px; font-weight: 650; }
+.pipeline__total { color: var(--text-dim); }
+.pipeline__total strong { font-size: 40px; line-height: 1; color: var(--text); margin-right: 6px; letter-spacing: -.02em; }
+
+/* The segmented bar: one coloured segment per Final Status */
+.pipeline__bar { display: flex; gap: 3px; height: 26px; }
+.seg {
+  display: block; height: 100%; border-radius: 6px;
+  background: var(--c);
+  transform-origin: left center;
+  animation: seg-grow .7s cubic-bezier(.2,.7,.2,1) both;   /* the only entrance animation on the page */
+  animation-delay: calc(var(--i) * 90ms);
+}
+@keyframes seg-grow { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .seg { animation: none; } }
+
+.seg--pending,  .dot--pending  { --c: var(--s-pending); }
+.seg--on-hold,  .dot--on-hold  { --c: var(--s-hold); }
+.seg--selected, .dot--selected { --c: var(--s-selected); }
+.seg--joined,   .dot--joined   { --c: var(--s-joined); }
+.seg--rejected, .dot--rejected { --c: var(--s-rejected); }
+
+.pipeline__legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
+.pipeline__legend li { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: baseline; }
+.pipeline__legend strong { grid-column: 2; font-size: 22px; line-height: 1.2; }
+.pipeline__legend .muted { grid-column: 2; font-size: 13px; }
+.legend__label { color: var(--text-dim); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); align-self: center; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Key numbers row -----------------*/
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); }
+.stats__item { padding: 4px 22px; border-left: 1px solid var(--line); display: grid; gap: 2px; }
+.stats__item:first-child { padding-left: 0; border-left: 0; }
+.stats__item strong { font-size: 26px; font-weight: 650; letter-spacing: -.01em; }
+.stats__item span { color: var(--text-dim); font-size: 14px; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Upcoming interviews list -----------------*/
+.upcoming__row {
+  display: grid; grid-template-columns: 96px 1fr auto; gap: 16px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+.upcoming__row:last-child { border-bottom: 0; padding-bottom: 0; }
+.upcoming__when, .upcoming__who, .upcoming__meta { display: grid; line-height: 1.35; }
+.upcoming__when span, .upcoming__who span { color: var(--text-dim); font-size: 13px; }
+.upcoming__when strong { color: var(--accent); }
+.upcoming__meta { justify-items: end; gap: 4px; }
+.upcoming__meta .muted { font-size: 13px; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Interviews per month chart -----------------*/
+.trend { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; height: 220px; align-items: end; }
+.trend__col { display: grid; grid-template-rows: auto 1fr auto; justify-items: center; align-items: end; height: 100%; gap: 6px; }
+.trend__bar { width: 100%; max-width: 44px; background: color-mix(in srgb, var(--accent) 38%, var(--panel)); border-radius: 6px 6px 2px 2px; min-height: 3px; }
+.trend__col.is-current .trend__bar { background: var(--accent); }
+.trend__count { font-weight: 650; }
+.trend__label { color: var(--text-dim); font-size: 13px; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Horizontal bar lists (department, source, experience) -----------------*/
+.bars { display: grid; gap: 12px; }
+.bars li { display: grid; grid-template-columns: 140px 1fr 28px; gap: 10px; align-items: center; }
+.bars__label { color: var(--text-dim); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bars__track { height: 8px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
+.bars__fill { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.bars__value { text-align: right; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Dashboard on small screens -----------------*/
+@media (max-width: 1000px) {
+  .stats { grid-template-columns: repeat(2, 1fr); row-gap: 16px; }
+  .stats__item:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 640px) {
+  .pipeline__legend { grid-template-columns: repeat(2, 1fr); }
+  .upcoming__row { grid-template-columns: 1fr; gap: 6px; }
+  .upcoming__meta { justify-items: start; }
+}
+/*-------------- End of the code ------------------------------*/

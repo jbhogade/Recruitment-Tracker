@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ------------- Start Code for Hiring pipeline (main feature of the Dashboard) ----------------- -->
+<!-- Shows every candidate by Final Status (Pending, On Hold, Selected, Joined, Rejected).
+     Data: "pipeline" list built in tracker/services.py -->
+<section class="pipeline" aria-labelledby="pipeline-title">
+  <div class="pipeline__head">
+    <div>
+      <h2 id="pipeline-title">Hiring pipeline</h2>
+      <p class="muted">Candidates by final status across {{ department_count }} departments</p>
+    </div>
+    <p class="pipeline__total"><strong>{{ total }}</strong> candidates</p>
+  </div>
+
+  <div class="pipeline__bar" role="img"
+       aria-label="{% for s in pipeline %}{{ s.label }} {{ s.count }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+    {% for s in pipeline %}
+      {% if s.count %}<span class="seg seg--{{ s.slug }}" style="width: {{ s.width }}%; --i: {{ forloop.counter0 }}"></span>{% endif %}
+    {% endfor %}
+  </div>
+
+  <ul class="pipeline__legend">
+    {% for s in pipeline %}
+      <li>
+        <span class="dot dot--{{ s.slug }}" aria-hidden="true"></span>
+        <span class="legend__label">{{ s.label }}</span>
+        <strong>{{ s.count }}</strong>
+        <span class="muted">{{ s.percent }}%</span>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<!-- ------------- Start Code for Key numbers row ----------------- -->
+<!-- Data: "stats" list built in tracker/services.py -->
+<section class="stats" aria-label="Key numbers">
+  {% for s in stats %}
+    <div class="stats__item">
+      <strong>{{ s.value }}</strong>
+      <span>{{ s.label }}</span>
+    </div>
+  {% endfor %}
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<div class="grid grid--2">
+
+  <!-- ------------- Start Code for Upcoming interviews list ----------------- -->
+  <section class="panel" aria-labelledby="upcoming-title">
+    <h2 id="upcoming-title" class="panel__title">Upcoming interviews</h2>
+    {% if upcoming %}
+      <ul class="upcoming">
+        {% for u in upcoming %}
+          <li class="upcoming__row">
+            <div class="upcoming__when">
+              <strong>{{ u.when }}</strong>
+              <span>{{ u.date }}</span>
+            </div>
+            <div class="upcoming__who">
+              <strong>{{ u.name }}</strong>
+              <span>{{ u.position }} &middot; {{ u.department }}</span>
+            </div>
+            <div class="upcoming__meta">
+              <span class="chip chip--{{ u.status_slug }}">{{ u.status }}</span>
+              <span class="muted">{{ u.interviewer }}</span>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No interviews are scheduled. Add a candidate to plan the next one.</p>
+    {% endif %}
+  </section>
+  <!-- ------------- End of the code ------------------------------ -->
+
+
+  <!-- ------------- Start Code for Interviews per month chart ----------------- -->
+  <section class="panel" aria-labelledby="trend-title">
+    <h2 id="trend-title" class="panel__title">Interviews per month</h2>
+    <div class="trend">
+      {% for m in trend %}
+        <div class="trend__col {% if m.is_current %}is-current{% endif %}">
+          <span class="trend__count">{{ m.count }}</span>
+          <span class="trend__bar" style="height: {{ m.height }}%"></span>
+          <span class="trend__label">{{ m.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  <!-- ------------- End of the code ------------------------------ -->
+
+</div>
+
+
+<div class="grid grid--3">
+
+  <!-- ------------- Start Code for Department breakdown ----------------- -->
+  <section class="panel" aria-labelledby="dept-title">
+    <h2 id="dept-title" class="panel__title">By department</h2>
+    <ul class="bars">
+      {% for b in by_department %}
+        <li><span class="bars__label">{{ b.label }}</span>
+          <span class="bars__track"><span class="bars__fill" style="width: {{ b.width }}%"></span></span>
+          <strong class="bars__value">{{ b.count }}</strong></li>
+      {% endfor %}
+    </ul>
+  </section>
+  <!-- ------------- End of the code ------------------------------ -->
+
+
+  <!-- ------------- Start Code for Source breakdown ----------------- -->
+  <section class="panel" aria-labelledby="source-title">
+    <h2 id="source-title" class="panel__title">By reference / source</h2>
+    <ul class="bars">
+      {% for b in by_source %}
+        <li><span class="bars__label">{{ b.label }}</span>
+          <span class="bars__track"><span class="bars__fill" style="width: {{ b.width }}%"></span></span>
+          <strong class="bars__value">{{ b.count }}</strong></li>
+      {% endfor %}
+    </ul>
+  </section>
+  <!-- ------------- End of the code ------------------------------ -->
+
+
+  <!-- ------------- Start Code for Fresher vs Experienced ----------------- -->
+  <section class="panel" aria-labelledby="exp-title">
+    <h2 id="exp-title" class="panel__title">Fresher and experienced</h2>
+    <ul class="bars">
+      {% for b in experience %}
+        <li><span class="bars__label">{{ b.label }}</span>
+          <span class="bars__track"><span class="bars__fill" style="width: {{ b.width }}%"></span></span>
+          <strong class="bars__value">{{ b.count }}</strong></li>
+      {% endfor %}
+    </ul>
+  </section>
+  <!-- ------------- End of the code ------------------------------ -->
+
+</div>
+
+
+<!-- ------------- Start Code for Recent candidates table ----------------- -->
+<!-- Latest interviews that have already happened. The full table with all 15 Excel columns
+     will be built on the Candidates page. -->
+<section class="panel" aria-labelledby="recent-title">
+  <h2 id="recent-title" class="panel__title">Recent candidates</h2>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Candidate</th>
+          <th scope="col">Position</th>
+          <th scope="col">Department</th>
+          <th scope="col">Interview date</th>
+          <th scope="col">Type</th>
+          <th scope="col" class="num">Expected CTC (LPA)</th>
+          <th scope="col">Final status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recent_rows %}
+          <tr>
+            <th scope="row">{{ r.name }}</th>
+            <td>{{ r.position }}</td>
+            <td>{{ r.department }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.experience }}</td>
+            <td class="num">{{ r.ctc }}</td>
+            <td><span class="chip chip--{{ r.final_slug }}">{{ r.final_status }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="empty">No interviews have taken place yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+{% endblock %}

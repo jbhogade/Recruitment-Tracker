@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <!-- ------------- Start Code for Page head (title, theme, CSS) ----------------- -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ page_title|default:"Home" }}{% endblock %} | {{ APP_NAME }}</title>
+
+  <!-- Apply the saved theme BEFORE the page is painted, so there is no flash of the wrong colours. -->
+  <script>
+    try {
+      var savedTheme = localStorage.getItem("rt_theme");
+      if (savedTheme) { document.documentElement.setAttribute("data-theme", savedTheme); }
+    } catch (e) { /* storage blocked: keep the default dark theme */ }
+  </script>
+
+  <link rel="stylesheet" href="{% static 'css/themes.css' %}">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block extra_css %}{% endblock %}
+  <!-- ------------- End of the code ------------------------------ -->
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="app">
+    {% include "partials/_sidebar.html" %}
+
+    <div class="app__body">
+      {% include "partials/_topbar.html" %}
+      <main id="main" class="content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script src="{% static 'js/theme.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
