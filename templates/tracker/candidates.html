@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/candidates.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ------------- Start Code for Message after Add / Import ----------------- -->
+{% if notice %}
+  <p class="notice" role="status">{{ notice }}</p>
+{% endif %}
+<!-- ------------- End of the code ------------------------------ -->
+
+<!-- ------------- Start Code for Search and filter bar ----------------- -->
+<!-- A normal web form (method GET): choices go into the web address, so a filtered list
+     can be bookmarked or shared. Filter list is defined in tracker/services.py (FILTER_FIELDS). -->
+<section class="panel filters" aria-label="Search and filters">
+  <form method="get" action="{% url 'tracker:candidates' %}" id="filter-form">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <input type="hidden" name="dir" value="{{ dir }}">
+
+    <div class="filters__search">
+      <label for="q">Search</label>
+      <input type="search" id="q" name="q" value="{{ q }}"
+             placeholder="Name, contact, position, remark...">
+    </div>
+
+    {% for f in filters %}
+      <div class="filters__field">
+        <label for="f-{{ f.name }}">{{ f.label }}</label>
+        <select id="f-{{ f.name }}" name="{{ f.name }}" data-autosubmit>
+          <option value="">All</option>
+          {% for opt in f.options %}
+            <option value="{{ opt }}"{% if opt == f.selected %} selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endfor %}
+
+    <div class="filters__actions">
+      <button type="submit" class="btn btn--primary">Apply</button>
+      {% if has_filters %}
+        <a class="btn" href="{% url 'tracker:candidates' %}">Clear all</a>
+      {% endif %}
+    </div>
+  </form>
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<!-- ------------- Start Code for Candidates table (all 15 Excel columns) ----------------- -->
+<!-- Column order comes from LIST_COLUMNS in tracker/services.py.
+     The first two columns stay in place while scrolling sideways. -->
+<section class="panel panel--flush" aria-labelledby="list-title">
+  <div class="list-head">
+    <div>
+      <h2 id="list-title" class="panel__title">All candidates</h2>
+      <p class="muted" aria-live="polite">
+        {% if result_count %}
+          Showing {{ showing_from }}&ndash;{{ showing_to }} of {{ result_count }}
+          {% if has_filters %}matching candidates (out of {{ total_count }}){% else %}candidates{% endif %}
+        {% else %}
+          0 candidates found
+        {% endif %}
+      </p>
+    </div>
+    <!-- ------------- Start Code for Action buttons (Add, Import, Export, Template) ----------------- -->
+    <!-- Export downloads ALL rows that match the current search / filters (not just this page).
+         Each menu offers the three file types: CSV, Excel (.xlsx), Excel 97-2003 (.xls). -->
+    <div class="toolbar">
+      <a class="btn btn--primary" href="{% url 'tracker:candidate_add' %}">Add candidate</a>
+      <a class="btn" href="{% url 'tracker:candidates_import' %}">Import</a>
+
+      <details class="menu">
+        <summary class="btn">Export</summary>
+        <div class="menu__list" role="menu" aria-label="Export file type">
+          {% for link in export_links %}<a role="menuitem" href="{{ link.url }}">{{ link.label }}</a>{% endfor %}
+          <p class="menu__note">{% if has_filters %}Exports the {{ result_count }} matching candidates{% else %}Exports all {{ total_count }} candidates{% endif %}</p>
+        </div>
+      </details>
+
+      <details class="menu">
+        <summary class="btn">Template</summary>
+        <div class="menu__list" role="menu" aria-label="Import template file type">
+          {% for link in template_links %}<a role="menuitem" href="{{ link.url }}">{{ link.label }}</a>{% endfor %}
+          <p class="menu__note">Empty file to fill in and import</p>
+        </div>
+      </details>
+    </div>
+    <!-- ------------- End of the code ------------------------------ -->
+  </div>
+
+  <div class="table-wrap">
+    <table class="table cand-table">
+      <thead>
+        <tr>
+          {% for c in columns %}
+            <th scope="col" class="col-{{ c.key }}{% if c.is_sorted %} is-sorted{% endif %}" aria-sort="{{ c.aria }}">
+              <a href="{{ c.url }}" title="Sort by {{ c.label }}">{{ c.label }}<span class="sort-arrow" aria-hidden="true">{{ c.arrow }}</span></a>
+            </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td class="col-sr_no num">{{ r.sr_no }}</td>
+            <th scope="row" class="col-name"><a class="name-link" href="{% url 'tracker:candidate_detail' r.sr_no %}" title="Open details and documents">{{ r.name }}</a></th>
+            <td>{{ r.education }}</td>
+            <td>{{ r.department }}</td>
+            <td>{{ r.position }}</td>
+            <td>{{ r.experience }}</td>
+            <td>{{ r.contact }}</td>
+            <td>{{ r.date }}</td>
+            <td><span class="chip chip--{{ r.interview_slug }}">{{ r.interview_status }}</span></td>
+            <td>{{ r.interviewer }}</td>
+            <td>{{ r.source }}</td>
+            <td>{% if r.referred_by %}{{ r.referred_by }}{% else %}&ndash;{% endif %}</td>
+            <td>{{ r.month_year }}</td>
+            <td class="cell-remark" title="{{ r.remark }}">{% if r.remark %}{{ r.remark }}{% else %}&ndash;{% endif %}</td>
+            <td><span class="chip chip--{{ r.final_slug }}">{{ r.final_status }}</span></td>
+            <td class="num">{{ r.ctc }}</td>
+            <td>{% if r.doc_count %}<a class="doc-link" href="{% url 'tracker:candidate_detail' r.sr_no %}#documents">{{ r.doc_count }} file{{ r.doc_count|pluralize }}</a>{% else %}&ndash;{% endif %}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="17" class="empty-state">
+              No candidates match your search. Try fewer words or
+              <a href="{% url 'tracker:candidates' %}">clear all filters</a>.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ------------- Start Code for Page numbers ----------------- -->
+  {% if pages|length > 1 %}
+    <nav class="pager" aria-label="Candidate pages">
+      {% if prev_url %}<a class="pager__link" href="{{ prev_url }}">Previous</a>{% else %}<span class="pager__link is-off">Previous</span>{% endif %}
+      {% for p in pages %}
+        {% if p %}
+          <a class="pager__link{% if p.is_current %} is-current{% endif %}" href="{{ p.url }}"{% if p.is_current %} aria-current="page"{% endif %}>{{ p.number }}</a>
+        {% else %}
+          <span class="pager__gap">&hellip;</span>
+        {% endif %}
+      {% endfor %}
+      {% if next_url %}<a class="pager__link" href="{{ next_url }}">Next</a>{% else %}<span class="pager__link is-off">Next</span>{% endif %}
+    </nav>
+  {% endif %}
+  <!-- ------------- End of the code ------------------------------ -->
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/candidates.js' %}"></script>
+{% endblock %}

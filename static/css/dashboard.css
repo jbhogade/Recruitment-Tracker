@@ -35,7 +35,8 @@
 .seg--rejected, .dot--rejected { --c: var(--s-rejected); }
 
 .pipeline__legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
-.pipeline__legend li { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: baseline; }
+.pipeline__legend a { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: baseline; color: inherit; text-decoration: none; padding: 4px 6px; margin: -4px -6px; border-radius: var(--radius-sm); }
+.pipeline__legend a:hover { background: var(--panel-2); }
 .pipeline__legend strong { grid-column: 2; font-size: 22px; line-height: 1.2; }
 .pipeline__legend .muted { grid-column: 2; font-size: 13px; }
 .legend__label { color: var(--text-dim); }

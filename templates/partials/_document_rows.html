@@ -1,0 +1,18 @@
+<!-- ------------- Start Code for Document upload rows (several files at once) ----------------- -->
+<!-- Needs: doc_types, doc_accept, doc_allowed_text, doc_max_mb, doc_max_files (from tracker/views.py).
+     static/js/documents.js adds "Add another document", removes rows and checks type / size in the browser.
+     The server checks everything again (tracker/documents.py). -->
+<div class="doc-rows" data-doc-rows data-max-files="{{ doc_max_files }}" data-max-mb="{{ doc_max_mb }}" data-accept="{{ doc_accept }}">
+  <p class="field__hint doc-rows__rules">
+    Allowed: {{ doc_allowed_text }}. Up to {{ doc_max_mb }} MB per file, {{ doc_max_files }} files at a time.
+  </p>
+
+  {% include "partials/_document_row.html" with index="0" %}
+
+  <template data-doc-template>
+    {% include "partials/_document_row.html" with index="__I__" %}
+  </template>
+
+  <button type="button" class="btn btn--small" data-doc-add hidden>+ Add another document</button>
+</div>
+<!-- ------------- End of the code ------------------------------ -->

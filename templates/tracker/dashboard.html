@@ -26,13 +26,16 @@
     {% endfor %}
   </div>
 
+  <!-- Each legend item opens the Candidates page already filtered by that Final Status -->
   <ul class="pipeline__legend">
     {% for s in pipeline %}
       <li>
-        <span class="dot dot--{{ s.slug }}" aria-hidden="true"></span>
-        <span class="legend__label">{{ s.label }}</span>
-        <strong>{{ s.count }}</strong>
-        <span class="muted">{{ s.percent }}%</span>
+        <a href="{% url 'tracker:candidates' %}?final_status={{ s.label|urlencode }}" title="Show {{ s.label }} candidates">
+          <span class="dot dot--{{ s.slug }}" aria-hidden="true"></span>
+          <span class="legend__label">{{ s.label }}</span>
+          <strong>{{ s.count }}</strong>
+          <span class="muted">{{ s.percent }}%</span>
+        </a>
       </li>
     {% endfor %}
   </ul>
@@ -152,7 +155,10 @@
 <!-- Latest interviews that have already happened. The full table with all 15 Excel columns
      will be built on the Candidates page. -->
 <section class="panel" aria-labelledby="recent-title">
-  <h2 id="recent-title" class="panel__title">Recent candidates</h2>
+  <div class="panel__head">
+    <h2 id="recent-title" class="panel__title">Recent candidates</h2>
+    <a class="panel__link" href="{% url 'tracker:candidates' %}">View all candidates</a>
+  </div>
   <div class="table-wrap">
     <table class="table">
       <thead>

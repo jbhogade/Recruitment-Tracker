@@ -18,13 +18,16 @@
     </a>
 
     <!-- Planned pages: built one by one, linked here after confirmation -->
-    <span class="nav__item is-planned" aria-disabled="true">Candidates <small>Planned</small></span>
+    <a class="nav__item {% if active_nav == 'candidates' %}is-active{% endif %}"
+       href="{% url 'tracker:candidates' %}"{% if active_nav == 'candidates' %} aria-current="page"{% endif %}>
+      Candidates
+    </a>
     <span class="nav__item is-planned" aria-disabled="true">Interviews <small>Planned</small></span>
     <span class="nav__item is-planned" aria-disabled="true">Departments <small>Planned</small></span>
     <span class="nav__item is-planned" aria-disabled="true">Reports <small>Planned</small></span>
     <span class="nav__item is-planned" aria-disabled="true">Settings <small>Planned</small></span>
   </nav>
 
-  <p class="sidebar__note">Demo data only. No database connected yet.</p>
+  <p class="sidebar__note">Test data only. Saved in a local file, no database yet.</p>
 </aside>
 <!-- ------------- End of the code ------------------------------ -->

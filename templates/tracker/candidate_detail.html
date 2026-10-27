@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ------------- Start Code for Messages (after Add / upload / delete) ----------------- -->
+{% if notices_good %}
+  <div class="notice" role="status"><ul class="notice__list">{% for m in notices_good %}<li>{{ m }}</li>{% endfor %}</ul></div>
+{% endif %}
+{% if notices_bad %}
+  <div class="notice notice--error" role="alert"><ul class="notice__list">{% for m in notices_bad %}<li>{{ m }}</li>{% endfor %}</ul></div>
+{% endif %}
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<!-- ------------- Start Code for Candidate details ----------------- -->
+<!-- Read-only view of one candidate. Editing is planned as the next step (Edit / delete candidate). -->
+<section class="panel" aria-labelledby="details-title">
+  <div class="panel__head">
+    <h2 id="details-title" class="panel__title">Candidate details</h2>
+    <a class="panel__link" href="{% url 'tracker:candidates' %}">Back to all candidates</a>
+  </div>
+  <dl class="details">
+    {% for f in fields %}
+      <div class="details__item">
+        <dt>{{ f.label }}</dt>
+        <dd>{% if f.chip %}<span class="chip {{ f.chip }}">{{ f.value }}</span>{% else %}{{ f.value }}{% endif %}</dd>
+      </div>
+    {% endfor %}
+  </dl>
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<!-- ------------- Start Code for Documents list ----------------- -->
+<section class="panel" id="documents" aria-labelledby="docs-title">
+  <h2 id="docs-title" class="panel__title">Documents ({{ docs|length }})</h2>
+
+  {% if docs %}
+    <div class="table-wrap">
+      <table class="table docs-table">
+        <thead>
+          <tr>
+            <th scope="col">Type</th><th scope="col">Name</th><th scope="col">File</th>
+            <th scope="col">Size</th><th scope="col">Added</th><th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in docs %}
+            <tr>
+              <td>{{ d.doc_type }}</td>
+              <th scope="row">{{ d.title }}</th>
+              <td><span class="muted">{{ d.group }}</span> {{ d.original_name }}</td>
+              <td>{{ d.size_text }}</td>
+              <td>{{ d.uploaded_text }}</td>
+              <td class="docs-table__actions">
+                {% if d.can_view %}<a class="btn btn--small" href="{% url 'tracker:document_file' person.sr_no d.id %}" target="_blank" rel="noopener">View</a>{% endif %}
+                <a class="btn btn--small" href="{% url 'tracker:document_file' person.sr_no d.id %}?download=1">Download</a>
+                <form method="post" action="{% url 'tracker:document_delete' person.sr_no d.id %}" class="inline-form"
+                      data-confirm="Delete &quot;{{ d.title }}&quot;? This cannot be undone.">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn--small btn--danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="empty">No documents yet. Add the CV and certificates below.</p>
+  {% endif %}
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<!-- ------------- Start Code for Add documents form ----------------- -->
+<section class="panel" aria-labelledby="add-docs-title">
+  <h2 id="add-docs-title" class="panel__title">Add documents</h2>
+  <form method="post" enctype="multipart/form-data" action="{% url 'tracker:document_upload' person.sr_no %}" class="form">
+    {% csrf_token %}
+    {% include "partials/_document_rows.html" %}
+    <div class="form__actions">
+      <button type="submit" class="btn btn--primary">Upload documents</button>
+    </div>
+  </form>
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/documents.js' %}"></script>
+{% endblock %}

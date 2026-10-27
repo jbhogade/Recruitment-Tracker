@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ------------- Start Code for Add candidate form ----------------- -->
+<!-- Fields follow the HR Excel sheet. Sr. No. and Month & Year are filled in automatically.
+     Rules for every field are in tracker/candidate_rules.py (same rules as Import).
+     Education, Department, Position, Source and Interviewer are dropdowns with a (+) button
+     (partials/_option_field.html): a missing choice is added on the spot and saved for next time. -->
+<form method="post" class="form" enctype="multipart/form-data" novalidate data-option-url="{% url 'tracker:option_add' %}">
+  {% csrf_token %}
+
+  {% if error_count %}
+    <p class="notice notice--error" role="alert">
+      Please correct {{ error_count }} field{{ error_count|pluralize }} marked below. Nothing has been saved yet.
+    </p>
+  {% endif %}
+
+  <section class="panel">
+    <h2 class="panel__title">Candidate</h2>
+    <div class="form__grid">
+      <div class="field field--wide{% if errors.name %} has-error{% endif %}">
+        <label for="id_name">Candidate name <span class="req">required</span></label>
+        <input type="text" id="id_name" name="name" value="{{ values.name }}" maxlength="100" autocomplete="off"
+               {% if errors.name %}aria-invalid="true" aria-describedby="err_name"{% endif %}>
+        {% if errors.name %}<p class="field__error" id="err_name">{{ errors.name }}</p>{% endif %}
+      </div>
+
+      <div class="field{% if errors.contact %} has-error{% endif %}">
+        <label for="id_contact">Contact No. <span class="req">required</span></label>
+        <input type="tel" id="id_contact" name="contact" value="{{ values.contact }}" maxlength="20" placeholder="98765 43210"
+               {% if errors.contact %}aria-invalid="true" aria-describedby="err_contact"{% endif %}>
+        {% if errors.contact %}<p class="field__error" id="err_contact">{{ errors.contact }}</p>{% else %}<p class="field__hint">10-digit mobile number</p>{% endif %}
+      </div>
+
+      {% include "partials/_option_field.html" with name="education" label="Education" required=False selected=values.education options=option_lists.education error=errors.education blank_label="Not selected" hint="" %}
+
+      <div class="field{% if errors.experience %} has-error{% endif %}">
+        <label for="id_experience">Fresher / Experienced <span class="req">required</span></label>
+        <select id="id_experience" name="experience" {% if errors.experience %}aria-invalid="true" aria-describedby="err_experience"{% endif %}>
+          <option value="">Select</option>
+          {% for t in experience_types %}<option value="{{ t }}"{% if values.experience == t %} selected{% endif %}>{{ t }}</option>{% endfor %}
+        </select>
+        {% if errors.experience %}<p class="field__error" id="err_experience">{{ errors.experience }}</p>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">Position applied for</h2>
+    <div class="form__grid">
+      {% include "partials/_option_field.html" with name="department" label="Department" required=True selected=values.department options=option_lists.department error=errors.department blank_label="Select" hint="Not in the list? Press + to add it" %}
+
+      {% include "partials/_option_field.html" with name="position" label="Position" required=True selected=values.position options=option_lists.position error=errors.position blank_label="Select" hint="" %}
+
+      {% include "partials/_option_field.html" with name="source" label="Reference / Source" required=False selected=values.source options=option_lists.source error=errors.source blank_label="Not specified" hint="" %}
+      <!-- Shown only when Reference / Source = Employee Referral (static/js/option_adder.js switches it).
+           Tells HR which employee referred the candidate. -->
+      <div class="referral-field" data-referral-field="{{ referral_source }}"{% if values.source != referral_source %} hidden{% endif %}>
+        {% include "partials/_option_field.html" with name="referred_by" label="Referred by (employee)" noun="employee name" required=True selected=values.referred_by options=option_lists.referred_by error=errors.referred_by blank_label="Select employee" hint="Employee who referred this candidate. Not in the list? Press +" %}
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">Interview</h2>
+    <div class="form__grid">
+      <div class="field{% if errors.interview_date %} has-error{% endif %}">
+        <label for="id_interview_date">Date of interview <span class="req">required</span></label>
+        <input type="date" id="id_interview_date" name="interview_date" value="{{ values.interview_date }}"
+               {% if errors.interview_date %}aria-invalid="true" aria-describedby="err_interview_date"{% endif %}>
+        {% if errors.interview_date %}<p class="field__error" id="err_interview_date">{{ errors.interview_date }}</p>{% else %}<p class="field__hint">Month &amp; Year is filled in automatically</p>{% endif %}
+      </div>
+
+      <div class="field{% if errors.interview_status %} has-error{% endif %}">
+        <label for="id_interview_status">Interview status</label>
+        <select id="id_interview_status" name="interview_status">
+          {% for t in interview_statuses %}<option value="{{ t }}"{% if values.interview_status == t %} selected{% endif %}>{{ t }}</option>{% endfor %}
+        </select>
+        {% if errors.interview_status %}<p class="field__error">{{ errors.interview_status }}</p>{% endif %}
+      </div>
+
+      {% include "partials/_option_field.html" with name="interviewer" label="Interviewer name" required=False selected=values.interviewer options=option_lists.interviewer error=errors.interviewer blank_label="Not assigned" hint="" %}
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">Outcome</h2>
+    <div class="form__grid">
+      <div class="field{% if errors.final_status %} has-error{% endif %}">
+        <label for="id_final_status">Final status</label>
+        <select id="id_final_status" name="final_status">
+          {% for t in final_statuses %}<option value="{{ t }}"{% if values.final_status == t %} selected{% endif %}>{{ t }}</option>{% endfor %}
+        </select>
+        {% if errors.final_status %}<p class="field__error">{{ errors.final_status }}</p>{% endif %}
+      </div>
+
+      <div class="field{% if errors.expected_ctc %} has-error{% endif %}">
+        <label for="id_expected_ctc">Expected CTC (LPA) <span class="req">required</span></label>
+        <input type="text" inputmode="decimal" id="id_expected_ctc" name="expected_ctc" value="{{ values.expected_ctc }}" maxlength="10" placeholder="3.5"
+               {% if errors.expected_ctc %}aria-invalid="true" aria-describedby="err_expected_ctc"{% endif %}>
+        {% if errors.expected_ctc %}<p class="field__error" id="err_expected_ctc">{{ errors.expected_ctc }}</p>{% else %}<p class="field__hint">Lakh per annum, e.g. 3.5</p>{% endif %}
+      </div>
+
+      <div class="field field--full{% if errors.remark %} has-error{% endif %}">
+        <label for="id_remark">Remark</label>
+        <textarea id="id_remark" name="remark" rows="3" maxlength="300">{{ values.remark }}</textarea>
+        {% if errors.remark %}<p class="field__error">{{ errors.remark }}</p>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------- Start Code for Documents (optional) ----------------- -->
+  <section class="panel">
+    <h2 class="panel__title">Documents <span class="req">optional</span></h2>
+    <p class="muted doc-intro">CV, 10th / 12th / graduation certificates and others. They are saved with the candidate.
+      You can also add or remove documents later from the candidate's details page.</p>
+    {% include "partials/_document_rows.html" %}
+  </section>
+  <!-- ------------- End of the code ------------------------------ -->
+
+  <div class="form__actions">
+    <button type="submit" class="btn btn--primary">Save candidate</button>
+    <a class="btn" href="{% url 'tracker:candidates' %}">Cancel</a>
+  </div>
+</form>
+<!-- ------------- End of the code ------------------------------ -->
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/option_adder.js' %}"></script>
+<script src="{% static 'js/documents.js' %}"></script>
+{% endblock %}

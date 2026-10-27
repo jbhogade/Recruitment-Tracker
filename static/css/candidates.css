@@ -1,0 +1,85 @@
+/* ==========================================================================
+   File : static/css/candidates.css
+   What : Styles used ONLY by the Candidates page
+          (filter bar, wide table, sticky columns, page numbers, buttons).
+   ========================================================================== */
+
+/*-------------- Start Code for Toolbar and Export / Template menus -----------------*/
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.menu { position: relative; }
+.menu summary { list-style: none; }
+.menu summary::-webkit-details-marker { display: none; }
+.menu summary::after { content: "\25BE"; margin-left: 8px; font-size: 11px; color: var(--text-dim); }
+.menu[open] summary { border-color: var(--accent); }
+.menu__list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 5; min-width: 230px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .35); padding: 6px; display: grid;
+}
+.menu__list a { padding: 8px 12px; border-radius: var(--radius-sm); color: var(--text); text-decoration: none; }
+.menu__list a:hover, .menu__list a:focus-visible { background: var(--panel-2); }
+.menu__note { padding: 6px 12px 4px; font-size: 13px; color: var(--text-dim); border-top: 1px solid var(--line); margin-top: 4px; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Search and filter bar -----------------*/
+.filters form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 16px; align-items: end; }
+.filters__search { grid-column: span 2; }
+.filters label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 4px; }
+.filters input[type="search"], .filters select {
+  width: 100%; height: 38px; padding: 0 10px; font: inherit;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
+.filters input::placeholder { color: var(--text-dim); }
+.filters__actions { display: flex; gap: 10px; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for List heading -----------------*/
+.panel--flush { padding: 0; }   /* no overflow:hidden, so the Export / Template menus are never cut off */
+.list-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 22px 12px; }
+.list-head .panel__title { margin-bottom: 2px; }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Candidates table -----------------*/
+.cand-table { min-width: 2050px; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+.cand-table th, .cand-table td { white-space: nowrap; }
+.cand-table thead th { background: var(--panel); position: relative; }
+.cand-table thead a { color: var(--text-dim); text-decoration: none; }
+.cand-table thead a:hover, .cand-table thead th.is-sorted a { color: var(--text); }
+.sort-arrow { margin-left: 6px; font-size: 10px; color: var(--accent); }
+
+/* First two columns (Sr. No. and Name) stay visible while scrolling sideways */
+.cand-table .col-sr_no, .cand-table .col-name { position: sticky; background: var(--panel); z-index: 1; }
+.cand-table .col-sr_no { left: 0; width: 96px; min-width: 96px; max-width: 96px; box-sizing: border-box; }
+.cand-table .col-name  { left: 96px; box-shadow: 1px 0 0 var(--line); }
+.cand-table tbody tr:hover .col-sr_no, .cand-table tbody tr:hover .col-name { background: var(--panel-2); }
+
+.name-link, .doc-link { color: inherit; text-decoration: none; }
+.name-link:hover, .doc-link:hover { text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.doc-link { color: var(--accent); }
+.cell-remark { max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+.empty-state { padding: 28px 12px; text-align: center; color: var(--text-dim); white-space: normal !important; }
+.empty-state a { color: var(--accent); }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Page numbers -----------------*/
+.pager { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 16px; border-top: 1px solid var(--line); }
+.pager__link {
+  min-width: 36px; padding: 6px 12px; text-align: center; text-decoration: none;
+  color: var(--text); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel-2);
+}
+a.pager__link:hover { border-color: var(--text-dim); }
+.pager__link.is-current { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 650; }
+.pager__link.is-off { opacity: .45; }
+.pager__gap { padding: 6px 4px; color: var(--text-dim); }
+/*-------------- End of the code ------------------------------*/
+
+
+/*-------------- Start Code for Candidates page on small screens -----------------*/
+@media (max-width: 1000px) { .filters form { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { .filters form { grid-template-columns: 1fr; } .filters__search { grid-column: auto; } }
+/*-------------- End of the code ------------------------------*/

@@ -6,8 +6,10 @@
 #        Fresher / Experienced, Contact No., Date of Interview,
 #        Interview Status, Interviewer Name, Reference/Source,
 #        Month & Year, Remark, Final Status, Expected CTC
-# Later : this file is replaced by SQL Server queries. Keep the dictionary
-#         keys below unchanged so the pages keep working.
+# Note  : this file now only creates the FIRST set of demo data (see
+#         tracker/data_store.py). After that, the pages read data/candidates.json.
+# Later : SQL Server replaces data_store.py. Keep the dictionary keys below
+#         unchanged so the pages keep working.
 # ==========================================================================
 
 #-------------- Start Code for Imports and allowed values -----------------
@@ -20,6 +22,9 @@ FINAL_STATUSES = ["Pending", "On Hold", "Selected", "Joined", "Rejected"]
 INTERVIEWERS = [
     "Rahul Deshmukh", "Sneha Kulkarni", "Amit Patil", "Priya Joshi", "Vikas Shinde",
 ]
+
+# Fake employee names used for demo candidates whose source is "Employee Referral".
+REFERRERS = ["Anil Pawar", "Kiran Jagdale", "Sunita More", "Rajesh Thakur"]
 #-------------- End of the code ------------------------------
 
 
@@ -75,15 +80,20 @@ def get_candidates(today=None):
 
     The keys match the HR Excel columns, converted to simple names:
       sr_no, name, education, department, position, experience, contact,
-      interview_date, interview_status, interviewer, source, month_year,
+      interview_date, interview_status, interviewer, source, referred_by, month_year,
       remark, final_status, expected_ctc
     """
     today = today or date.today()
     candidates = []
+    referral_count = 0                       # used to hand out the demo referrer names in turn
     for index, row in enumerate(_RAW_ROWS, start=1):
         (name, education, department, position, experience,
          day_offset, interview_status, source, remark, final_status, ctc) = row
         interview_date = today + timedelta(days=day_offset)
+        referred_by = ""
+        if source == "Employee Referral":
+            referred_by = REFERRERS[referral_count % len(REFERRERS)]
+            referral_count += 1
         candidates.append({
             "sr_no": index,
             "name": name,
@@ -96,6 +106,7 @@ def get_candidates(today=None):
             "interview_status": interview_status,
             "interviewer": INTERVIEWERS[index % len(INTERVIEWERS)],
             "source": source,
+            "referred_by": referred_by,                     # employee who referred (Employee Referral only)
             "month_year": interview_date.strftime("%b %Y"), # e.g. "Oct 2026"
             "remark": remark,
             "final_status": final_status,

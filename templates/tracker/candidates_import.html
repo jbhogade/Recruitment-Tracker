@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ------------- Start Code for Import: upload form ----------------- -->
+<!-- Step 1: choose a file (CSV, XLSX or XLS). The file is only CHECKED here, nothing is saved yet. -->
+<section class="panel">
+  <h2 class="panel__title">1. Choose the file</h2>
+  <p class="muted import__intro">
+    Use the template so the column headings match. You can also import a file exported from this portal.
+    Accepted: <strong>.csv</strong>, <strong>.xlsx</strong>, <strong>.xls</strong> (up to 5 MB, 2000 rows).
+  </p>
+
+  <div class="import__template">
+    <span class="muted">Template:</span>
+    {% for link in template_links %}<a class="btn btn--small" href="{{ link.url }}">{{ link.label }}</a>{% endfor %}
+  </div>
+
+  {% if error %}<p class="notice notice--error" role="alert">{{ error }}</p>{% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="import__form">
+    {% csrf_token %}
+    <label for="id_file" class="visually-hidden">Import file</label>
+    <input type="file" id="id_file" name="file" accept=".csv,.xlsx,.xls" required>
+    <button type="submit" class="btn btn--primary">Check file</button>
+    <a class="btn" href="{% url 'tracker:candidates' %}">Back to candidates</a>
+  </form>
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+{% if result and not error %}
+
+<!-- ------------- Start Code for Import: result summary and confirm ----------------- -->
+<section class="panel">
+  <h2 class="panel__title">2. Check the result</h2>
+  <p class="import__summary">
+    <strong>{{ filename }}</strong>: {{ result.total_rows }} row{{ result.total_rows|pluralize }} found.
+    <span class="count count--ok">{{ valid_count }} ready to import</span>
+    <span class="count{% if problem_count %} count--bad{% endif %}">{{ problem_count }} cannot be imported</span>
+  </p>
+
+  {% if result.ignored %}
+    <p class="muted">Columns not used by the portal (ignored): {{ result.ignored|join:", " }}</p>
+  {% endif %}
+
+  {% if valid_count %}
+    <h3 class="import__sub">Preview{% if valid_count > 10 %} (first 10 of {{ valid_count }}){% endif %}</h3>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr>
+          <th scope="col">Candidate</th><th scope="col">Department</th><th scope="col">Position</th>
+          <th scope="col">Contact</th><th scope="col">Interview date</th><th scope="col">Final status</th>
+          <th scope="col" class="num">Expected CTC (LPA)</th>
+        </tr></thead>
+        <tbody>
+          {% for r in preview %}
+            <tr>
+              <th scope="row">{{ r.name }}</th><td>{{ r.department }}</td><td>{{ r.position }}</td>
+              <td>{{ r.contact }}</td><td>{{ r.interview_date|date:"d M Y" }}</td><td>{{ r.final_status }}</td>
+              <td class="num">{{ r.ctc }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Step 2: only this button saves the rows -->
+    <form method="post" action="{% url 'tracker:candidates_import_confirm' %}" class="form__actions">
+      {% csrf_token %}
+      <input type="hidden" name="token" value="{{ token }}">
+      <button type="submit" class="btn btn--primary">Import {{ valid_count }} candidate{{ valid_count|pluralize }}</button>
+      <a class="btn" href="{% url 'tracker:candidates' %}">Cancel</a>
+      {% if problem_count %}<span class="muted">The {{ problem_count }} problem row{{ problem_count|pluralize }} below will be skipped.</span>{% endif %}
+    </form>
+  {% else %}
+    <p class="notice notice--error" role="alert">No rows can be imported. Fix the points below in your file and upload it again.</p>
+  {% endif %}
+</section>
+<!-- ------------- End of the code ------------------------------ -->
+
+
+<!-- ------------- Start Code for Import: rows with problems ----------------- -->
+{% if problem_count %}
+<section class="panel">
+  <h2 class="panel__title">Rows that cannot be imported</h2>
+  <p class="muted import__intro">Row numbers are the same as in your file (row 1 = headings).</p>
+  <div class="table-wrap">
+    <table class="table table--problems">
+      <thead><tr><th scope="col">Row</th><th scope="col">Candidate</th><th scope="col">What to fix</th></tr></thead>
+      <tbody>
+        {% for p in result.problems|slice:":200" %}
+          <tr>
+            <td class="num">{{ p.row }}</td>
+            <th scope="row">{{ p.name }}</th>
+            <td><ul class="problem-list">{% for m in p.messages %}<li>{{ m }}</li>{% endfor %}</ul></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if problem_count > 200 %}<p class="muted">Showing the first 200 of {{ problem_count }} problem rows.</p>{% endif %}
+</section>
+{% endif %}
+<!-- ------------- End of the code ------------------------------ -->
+
+{% endif %}
+
+{% endblock %}

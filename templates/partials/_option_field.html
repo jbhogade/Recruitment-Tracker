@@ -1,0 +1,34 @@
+<!-- ------------- Start Code for Dropdown field with (+) button ----------------- -->
+<!-- Reusable block used by Education, Department, Position, Reference / Source and Interviewer.
+     Values passed in by the Add form:
+       name, label, required (True/False), selected, options, error, blank_label, hint
+       noun (optional): wording for the + button and the add box, e.g. "employee name"
+     The (+) button and the small "add new" box are switched on by static/js/option_adder.js. -->
+{% with word=noun|default:label|lower %}
+<div class="field{% if error %} has-error{% endif %}" data-option-field="{{ name }}">
+  <label for="id_{{ name }}">{{ label }}{% if required %} <span class="req">required</span>{% endif %}</label>
+
+  <div class="field__row">
+    <select id="id_{{ name }}" name="{{ name }}"{% if error %} aria-invalid="true" aria-describedby="err_{{ name }}"{% endif %}>
+      <option value="">{{ blank_label }}</option>
+      {% for opt in options %}<option value="{{ opt }}"{% if opt == selected %} selected{% endif %}>{{ opt }}</option>{% endfor %}
+    </select>
+    <button type="button" class="add-btn" data-add-option="{{ name }}" hidden
+            aria-expanded="false" aria-controls="addbox_{{ name }}"
+            aria-label="Add a new {{ word }} to the list" title="Not in the list? Add new {{ word }}">+</button>
+  </div>
+
+  <!-- Small box that opens under the dropdown when (+) is pressed -->
+  <div class="add-box" id="addbox_{{ name }}" hidden>
+    <input type="text" class="add-box__input" maxlength="80" autocomplete="off"
+           placeholder="New {{ word }}" aria-label="New {{ word }}">
+    <button type="button" class="btn btn--small btn--primary" data-add-save>Add</button>
+    <button type="button" class="btn btn--small" data-add-cancel>Cancel</button>
+    <p class="add-box__msg" role="alert"></p>
+  </div>
+  <p class="field__status" role="status"></p>
+
+  {% if error %}<p class="field__error" id="err_{{ name }}">{{ error }}</p>{% elif hint %}<p class="field__hint">{{ hint }}</p>{% endif %}
+</div>
+{% endwith %}
+<!-- ------------- End of the code ------------------------------ -->

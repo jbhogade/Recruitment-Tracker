@@ -136,3 +136,21 @@ USE_THOUSAND_SEPARATOR = False
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 #-------------- End of the code ------------------------------
+
+
+#-------------- Start Code for Data folder and import limits -----------------
+# Until SQL Server is connected, candidates added through the portal or the Import
+# page are kept in a plain file: <project>/data/candidates.json
+# (created automatically on first use, filled with demo data).
+# Uploaded documents are kept next to it in data/documents/. BACK UP THE WHOLE data FOLDER.
+# To start again with fresh demo data: run  python tools/reset_demo_data.py
+DATA_DIR = BASE_DIR / "data"
+
+MAX_UPLOAD_MB = 5          # biggest import file accepted
+MAX_IMPORT_ROWS = 2000     # most candidate rows accepted in one import file
+
+# Candidate documents (CV, certificates...). Files are stored in data/documents/<Sr. No.>/
+MAX_DOCUMENT_MB = 10                  # biggest single document accepted
+MAX_FILES_PER_UPLOAD = 10             # documents that can be sent in one go
+MAX_DOCUMENTS_PER_CANDIDATE = 30      # total documents kept for one candidate
+#-------------- End of the code ------------------------------

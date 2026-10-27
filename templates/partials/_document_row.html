@@ -1,0 +1,23 @@
+<!-- ------------- Start Code for ONE document upload row ----------------- -->
+<!-- Used by _document_rows.html. "index" makes the field names unique (doc_type_0, doc_file_0 ...).
+     The server reads the rows by these numbers (tracker/views.py -> _document_rows). -->
+<div class="doc-row" data-doc-row>
+  <div class="field">
+    <label for="doc_type_{{ index }}">Document type</label>
+    <select id="doc_type_{{ index }}" name="doc_type_{{ index }}">
+      {% for t in doc_types %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="field">
+    <label for="doc_title_{{ index }}">Name <span class="req">optional</span></label>
+    <input type="text" id="doc_title_{{ index }}" name="doc_title_{{ index }}" maxlength="80" autocomplete="off"
+           placeholder="e.g. B.Com final year marksheet">
+  </div>
+  <div class="field doc-row__file">
+    <label for="doc_file_{{ index }}">File</label>
+    <input type="file" id="doc_file_{{ index }}" name="doc_file_{{ index }}" accept="{{ doc_accept }}" data-doc-file>
+  </div>
+  <button type="button" class="btn btn--small doc-row__remove" data-doc-remove hidden aria-label="Remove this document row">Remove</button>
+  <p class="field__error doc-row__error" role="alert"></p>
+</div>
+<!-- ------------- End of the code ------------------------------ -->
